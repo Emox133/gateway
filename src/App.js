@@ -36,7 +36,13 @@ function App() {
 
   function _createOrder(data, actions) {
     return actions.order.create({
-      purchase_units: orderData
+      purchase_units: [
+        {
+          amount: {
+            value: '1'
+          }
+        }
+      ]
     })
   }
 
