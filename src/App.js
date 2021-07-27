@@ -1,20 +1,9 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import ReactDOM from 'react-dom'
 import './App.css';
+import axios from 'axios'
 
 const PayPalButton = window.paypal.Buttons.driver("react", { React, ReactDOM });
-
-function _createOrder(data, actions) {
-  return actions.order.create({
-    purchase_units: [
-      {
-        amount: {
-          value: "1",
-        },
-      },
-    ],
-  });
-}
 
 async function _onApprove(data, actions) {
   let order = await actions.order.capture();
@@ -35,6 +24,22 @@ function _onError(err) {
 }
 
 function App() {
+  const [orderData, setOrderData] = useState()
+  console.log(orderData)
+
+  useEffect(() => {
+    axios.get('http://localhost:8000/paypal').then(res => {
+      setOrderData(res.data.create_payment_json)
+    })
+      .catch(err => console.log(err.response))
+  }, [])
+
+  function _createOrder(data, actions) {
+    return actions.order.create({
+      purchase_units: orderData
+    })
+  }
+
   return (
     <div className="App">
       <PayPalButton
